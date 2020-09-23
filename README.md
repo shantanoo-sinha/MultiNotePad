@@ -1,4 +1,4 @@
-# MultiNotePad
+# Multi-Note Pad
 MultiNotePad Android Application
 
 ## App Features
