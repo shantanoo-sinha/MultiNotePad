@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.shantanoo.multi_notepad.MainActivity;
 import com.shantanoo.multi_notepad.R;
 import com.shantanoo.multi_notepad.model.Note;
+import com.shantanoo.multi_notepad.util.Util;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -25,17 +26,12 @@ public class NotesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     private static final String TAG = "NotesAdapter";
 
-    private Context context;
     private List<Note> notesList;
     private MainActivity mainActivity;
 
-    private final SimpleDateFormat dateFormat;
-
-    public NotesAdapter(Context context, List<Note> notesList, MainActivity mainActivity) {
-        this.context = context;
+    public NotesAdapter(List<Note> notesList, MainActivity mainActivity) {
         this.notesList = notesList;
         this.mainActivity = mainActivity;
-        dateFormat = new SimpleDateFormat("EEE MMM dd, hh:mm aaa");
     }
 
     @NonNull
@@ -81,21 +77,15 @@ public class NotesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         public void bind(Note note) {
             String title = note.getTitle();
             if (title != null && title.length() > 80)
-                title = title.substring(0, 80) + R.string.continued_string;
+                title = title.substring(0, 80) + mainActivity.getString(R.string.continued_string);
             tvNotesTitle.setText(title);
 
             String text = note.getText();
             if (text != null && text.length() > 80)
-                text = text.substring(0, 80) + R.string.continued_string;
+                text = text.substring(0, 80) + mainActivity.getString(R.string.continued_string);
             tvNotesText.setText(text);
 
-            tvNotesTimestamp.setText(formatDateAsString(note.getTimestamp()));
+            tvNotesTimestamp.setText(Util.formatDateAsString(note.getTimestamp()));
         }
-    }
-
-    private String formatDateAsString(Date timestamp) {
-        if(timestamp == null)
-            return null;
-        return dateFormat.format(timestamp);
     }
 }
