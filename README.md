@@ -30,3 +30,6 @@ MultiNotePad Android Application
 ### About Activity
 * The About Activity contains the application title, a copyright date and the developer's name, and the version number.
 * There is no functionality present on this activity. The only action a user can take is to press the Back arrow to exit the activity.
+
+### App Walkthrough GIF
+<img src="walkthrough.gif" width=250><br>
