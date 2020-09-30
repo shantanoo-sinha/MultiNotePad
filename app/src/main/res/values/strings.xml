@@ -30,4 +30,6 @@
     <string name="notes_updated">notes_updated</string>
     <string name="delete_note">Delete Note \'</string>
     <string name="unknown_item">Unknown item</string>
+    <string name="note_saved">Note saved!</string>
+    <string name="note_deleted">Note deleted!</string>
 </resources>

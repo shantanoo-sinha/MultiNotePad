@@ -140,18 +140,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
         // No button
-        builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+        builder.setNegativeButton(getString(R.string.no), new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 // Do nothing
             }
         });
 
         // Yes button
-        builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+        builder.setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 notes.remove(notePosition);
                 notesUpdated = true;
                 updateNotesCount();
+                Toast.makeText(getApplicationContext(), getString(R.string.note_deleted), Toast.LENGTH_SHORT).show();
                 notesAdapter.notifyDataSetChanged();
             }
         });

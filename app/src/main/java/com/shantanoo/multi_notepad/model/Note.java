@@ -18,7 +18,8 @@ public class Note implements Comparable<Note>, Serializable {
         this.timestamp = timestamp;
     }
 
-    public Note() {}
+    public Note() {
+    }
 
     public String getTitle() {
         return title;

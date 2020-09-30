@@ -6,6 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="#817F7F"
+    android:foreground="?selectableItemBackground"
     android:clickable="true"
     android:focusable="true"
     android:paddingLeft="5dp"

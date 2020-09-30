@@ -76,7 +76,7 @@ public class AddNote extends AppCompatActivity {
         }
 
         Log.d(TAG, "onOptionsItemSelected: Unknown menu item =>" + item.getItemId());
-        Toast.makeText(this, R.string.unknown_item, Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, getString(R.string.unknown_item), Toast.LENGTH_SHORT).show();
         return super.onOptionsItemSelected(item);
     }
 
@@ -131,7 +131,7 @@ public class AddNote extends AppCompatActivity {
             builder.setMessage(message);
 
             // No button
-            builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+            builder.setNegativeButton(getString(R.string.no), new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
                     // exit without saving
                     exitWithoutSaving(false);
@@ -139,7 +139,7 @@ public class AddNote extends AppCompatActivity {
             });
 
             // Yes button
-            builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+            builder.setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
                     // save note and add details to intent
                     saveNote(currentTitle, currentText, isNewNote);
@@ -165,13 +165,14 @@ public class AddNote extends AppCompatActivity {
         Log.d(TAG, "saveNote: Saving note");
         Note note = new Note(currentTitle, currentText, new Date());
         Intent intent = new Intent();
-        if(isNewNote) {
+        if (isNewNote) {
             intent.putExtra(getString(R.string.new_note), (Serializable) note);
         } else {
             intent.putExtra(getString(R.string.note), (Serializable) note);
             intent.putExtra(getString(R.string.note_position), notePosition);
             intent.putExtra(getString(R.string.note_updated), true);
         }
+        Toast.makeText(getApplicationContext(), getString(R.string.note_saved), Toast.LENGTH_SHORT).show();
         setResult(RESULT_OK, intent);
         finish();
     }
@@ -180,7 +181,7 @@ public class AddNote extends AppCompatActivity {
     public void exitWithoutSaving(boolean showToast) {
         Log.d(TAG, "exitWithoutSaving:");
         if (showToast)
-            Toast.makeText(this, R.string.title_empty_message, Toast.LENGTH_LONG).show();
+            Toast.makeText(this, getString(R.string.title_empty_message), Toast.LENGTH_LONG).show();
 
         Intent intent = new Intent();
         intent.putExtra(getString(R.string.note_updated), false);
