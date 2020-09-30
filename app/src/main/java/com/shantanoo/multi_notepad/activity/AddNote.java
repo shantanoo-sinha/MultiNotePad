@@ -1,8 +1,5 @@
 package com.shantanoo.multi_notepad.activity;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -12,8 +9,10 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
-
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.shantanoo.multi_notepad.R;
 import com.shantanoo.multi_notepad.model.Note;
@@ -35,6 +34,7 @@ public class AddNote extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d(TAG, "onCreate:");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_note);
 
@@ -68,15 +68,15 @@ public class AddNote extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        Log.d(TAG, "onOptionsItemSelected: Saving note");
+        Log.d(TAG, "onOptionsItemSelected: Selected menu item =>" + item.getItemId());
         if (item.getItemId() == R.id.mnuSaveNote) {
-            Log.d(TAG, "Selected menu item" + item.getItemId());
+            Log.d(TAG, "onOptionsItemSelected: Saving note");
             saveNote(false);
             return true;
         }
 
-        Log.d(TAG, "Unknown menu item" + item.getItemId());
-        Toast.makeText(this, "Unknown item", Toast.LENGTH_SHORT).show();
+        Log.d(TAG, "onOptionsItemSelected: Unknown menu item =>" + item.getItemId());
+        Toast.makeText(this, R.string.unknown_item, Toast.LENGTH_SHORT).show();
         return super.onOptionsItemSelected(item);
     }
 
@@ -86,114 +86,102 @@ public class AddNote extends AppCompatActivity {
     }
 
     private void saveNote(boolean fromBackButton) {
+        Log.d(TAG, "saveNote: Saving note");
+
         final String currentTitle = etNoteTitle.getText().toString().trim();
         final String currentText = etNoteText.getText().toString().trim();
 
-        if (existingNote) { // Existing note
-            if( currentTitle.length() != 0 ){ // If title entered
-                if( !currentTitle.equals(previousNoteTitle) || !currentText.equals(previousNoteText)) {
-                    if(fromBackButton){
-                        // save note from back button
-
-                        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                        // Setting Message
-                        String message = getString(R.string.note_not_saved) +
-                                getString(R.string.new_line) +
-                                getString(R.string.save_this_note) + currentTitle + getString(R.string.question);
-                        builder.setMessage(message);
-
-                        // No button
-                        builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                // exit without saving
-                                exitWithoutSaving(false);
-                            }
-                        });
-
-                        // Yes button
-                        builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                // save note and add details to intent
-                                Intent intent = new Intent();
-                                Note note = new Note(currentTitle, currentText, new Date());
-                                intent.putExtra(getString(R.string.note), (Serializable)note);
-                                intent.putExtra(getString(R.string.note_position), notePosition);
-                                intent.putExtra(getString(R.string.note_updated), true);
-                                setResult(RESULT_OK, intent);
-                                finish();
-                            }
-                        });
-
-                        AlertDialog dialog = builder.create();
-                        dialog.show();
-                    } else {
-                        // save request from save button
-                        Intent intent = new Intent();
-                        Note note = new Note(currentTitle, currentText, new Date());
-                        intent.putExtra(getString(R.string.note), (Serializable)note);
-                        intent.putExtra(getString(R.string.note_position), notePosition);
-                        intent.putExtra(getString(R.string.note_updated), true);
-                        setResult(RESULT_OK, intent);
-                        finish();
-                    }
-                } else{
-                    // Title and desc are same so exit with saving no toast
-                    exitWithoutSaving(false);
-                }
-            } else{
+        if (existingNote) {
+            Log.d(TAG, "saveNote: Existing note");
+            // Existing note
+            if (currentTitle.length() == 0) {
                 // No title entered exit with TOAST
+                Log.d(TAG, "saveNote: No title entered, exit with TOAST");
                 exitWithoutSaving(true);
+            } else {
+                // If title is entered
+                if (currentTitle.equals(previousNoteTitle) && currentText.equals(previousNoteText)) {
+                    // Title and desc are same so exit with saving no toast
+                    Log.d(TAG, "saveNote: Title and desc are same so exit with saving no toast");
+                    exitWithoutSaving(false);
+                } else {
+                    saveNote(fromBackButton, currentTitle, currentText, false);
+                }
             }
-        } else { // New Note
-            if (currentTitle.length() != 0) {
-                if(fromBackButton){
-                    AlertDialog.Builder builder = new AlertDialog.Builder(this);
-
-                    // Mo button
-                    builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            exitWithoutSaving(false);
-                        }
-                    });
-
-                    // Yes button
-                    builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            Intent intent = new Intent();
-                            Note note = new Note(currentTitle, currentText, new Date());
-                            intent.putExtra(getString(R.string.new_note), (Serializable) note);
-                            setResult(RESULT_OK, intent);
-                            finish();
-                        }
-                    });
-
-                    // Setting message
-                    String message = getString(R.string.note_not_saved) +
-                            getString(R.string.new_line) +
-                            getString(R.string.save_this_note) + currentTitle + getString(R.string.question);
-                    builder.setMessage(message);
-                    AlertDialog dialog = builder.create();
-                    dialog.show();
-                }
-                else{
-                    Intent intent = new Intent();
-                    Log.d(TAG, "saveNote: intent created");
-                    Note note = new Note(currentTitle, currentText, new Date());
-                    Log.d(TAG, "saveNote: note object created");
-                    intent.putExtra(getString(R.string.new_note), (Serializable) note);
-                    setResult(RESULT_OK, intent);
-                    finish();
-                }
-            } else { // Title is empty exit with showing toast
+        } else {
+            // New Note
+            Log.d(TAG, "saveNote: New note");
+            if (currentTitle.length() == 0) {
+                // No title entered exit with TOAST
+                Log.d(TAG, "saveNote: No title entered, exit with TOAST");
                 exitWithoutSaving(true);
+            } else {
+                saveNote(fromBackButton, currentTitle, currentText, true);
             }
         }
     }
 
-    // Function will navigate back to main without saving
-    public void exitWithoutSaving(boolean showToast){
-        if(showToast)
+    private void saveNote(boolean fromBackButton, final String currentTitle, final String currentText, final boolean isNewNote) {
+        if (fromBackButton) {
+            // back button pressed. Show dialog
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+            // Setting Message
+            String message = getDialogMessage(currentTitle);
+            builder.setMessage(message);
+
+            // No button
+            builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    // exit without saving
+                    exitWithoutSaving(false);
+                }
+            });
+
+            // Yes button
+            builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    // save note and add details to intent
+                    saveNote(currentTitle, currentText, isNewNote);
+                }
+            });
+
+            AlertDialog dialog = builder.create();
+            dialog.show();
+        } else {
+            // save request from save button
+            saveNote(currentTitle, currentText, isNewNote);
+        }
+    }
+
+    private String getDialogMessage(String currentTitle) {
+        return getString(R.string.note_not_saved) +
+                getString(R.string.new_line) +
+                getString(R.string.save_this_note) + currentTitle + getString(R.string.question);
+    }
+
+    // Save new note or existing note
+    private void saveNote(String currentTitle, String currentText, boolean isNewNote) {
+        Log.d(TAG, "saveNote: Saving note");
+        Note note = new Note(currentTitle, currentText, new Date());
+        Intent intent = new Intent();
+        if(isNewNote) {
+            intent.putExtra(getString(R.string.new_note), (Serializable) note);
+        } else {
+            intent.putExtra(getString(R.string.note), (Serializable) note);
+            intent.putExtra(getString(R.string.note_position), notePosition);
+            intent.putExtra(getString(R.string.note_updated), true);
+        }
+        setResult(RESULT_OK, intent);
+        finish();
+    }
+
+    // This will navigate back to main activity without saving the note
+    public void exitWithoutSaving(boolean showToast) {
+        Log.d(TAG, "exitWithoutSaving:");
+        if (showToast)
             Toast.makeText(this, R.string.title_empty_message, Toast.LENGTH_LONG).show();
+
         Intent intent = new Intent();
         intent.putExtra(getString(R.string.note_updated), false);
         setResult(RESULT_OK, intent);

@@ -13,17 +13,16 @@ import java.util.Locale;
  */
 public class Util {
 
+    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("EEE MMM dd, hh:mm aaa", Locale.US);
     private static final String TAG = "Util";
 
-    public static final SimpleDateFormat dateFormat = new SimpleDateFormat("EEE MMM dd, hh:mm aaa", Locale.US);
-
     public static String formatDateAsString(Date timestamp) {
-        if(timestamp == null)
+        if (timestamp == null)
             return null;
         return dateFormat.format(timestamp);
     }
 
-    public static Date formatStringAsDate(String input){
+    public static Date formatStringAsDate(String input) {
         if (TextUtils.isEmpty(input))
             return null;
         try {

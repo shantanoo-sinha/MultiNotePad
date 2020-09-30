@@ -18,31 +18,18 @@ public class Note implements Comparable<Note>, Serializable {
         this.timestamp = timestamp;
     }
 
-    public Note() {
-    }
+    public Note() {}
 
     public String getTitle() {
         return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
     }
 
     public String getText() {
         return text;
     }
 
-    public void setText(String text) {
-        this.text = text;
-    }
-
     public Date getTimestamp() {
         return timestamp;
-    }
-
-    public void setTimestamp(Date timestamp) {
-        this.timestamp = timestamp;
     }
 
     @Override
@@ -56,7 +43,7 @@ public class Note implements Comparable<Note>, Serializable {
 
     @Override
     public int compareTo(Note o) {
-        if(o.getTimestamp() == null)
+        if (o.getTimestamp() == null)
             return 0;
         return o.getTimestamp().compareTo(this.getTimestamp());
     }

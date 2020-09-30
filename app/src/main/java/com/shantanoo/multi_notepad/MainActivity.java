@@ -45,8 +45,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private static final int NEW_NOTE = 1;
     private static final int EXISTING_NOTE = 2;
 
-    private boolean notesUpdated = false;
     private List<Note> notes;
+    private boolean notesUpdated = false;
 
     private RecyclerView recyclerView;
     private NotesAdapter notesAdapter;
@@ -63,12 +63,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         recyclerView = findViewById(R.id.rvNotes);
         notesAdapter = new NotesAdapter(notes, this);
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-
         recyclerView.setAdapter(notesAdapter);
+
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
 
-        // Load Notes
+        // Load Notes from JSON file
         loadNotes();
     }
 
@@ -88,15 +88,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     protected void onPause() {
-        Log.d(TAG, "onPause: Saving Notes");
+        Log.d(TAG, "onPause: Saving Notes to JSON file");
         saveNotes();
         super.onPause();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-
     }
 
     @Override
@@ -107,21 +101,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        Intent intent;
+        Log.d(TAG, "Selected menu item: " + item.getItemId());
         switch (item.getItemId()) {
             case R.id.mnuAbout:
                 // Open About activity
-                Log.d(TAG, "Selected menu item" + item.getItemId());
-                intent = new Intent(this, About.class);
+                Intent intent = new Intent(this, About.class);
                 startActivity(intent);
                 return true;
             case R.id.mnuAddNote:
                 // Open Add Note activity
-                Log.d(TAG, "Selected menu item" + item.getItemId());
                 addNoteActivity(0, false, null);
                 return true;
             default:
-                Log.d(TAG, "Unknown menu item" + item.getItemId());
+                Log.d(TAG, "Unknown menu item: " + item.getItemId());
                 Toast.makeText(this, "Unknown item", Toast.LENGTH_SHORT).show();
         }
         return super.onOptionsItemSelected(item);
@@ -158,14 +150,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void onClick(DialogInterface dialog, int id) {
                 notes.remove(notePosition);
                 notesUpdated = true;
-                //Collections.sort(notes);
                 updateNotesCount();
                 notesAdapter.notifyDataSetChanged();
             }
         });
 
+        // Setting message
         String noteTitle = note == null ? "" : note.getTitle();
         builder.setMessage(getString(R.string.delete_note) + noteTitle + getString(R.string.question));
+
         AlertDialog dialog = builder.create();
         dialog.show();
         return true;
@@ -173,8 +166,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void loadNotes() {
         Log.d(TAG, "loadNotes: Loading Notes from JSON file");
-
-        //note = new Note();
         try {
             InputStream is = getApplicationContext().openFileInput(getString(R.string.notes_json_file));
             BufferedReader reader = new BufferedReader(new InputStreamReader(is, getString(R.string.utf_8)));
@@ -189,7 +180,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             JSONObject jsonObject = new JSONObject(builder.toString());
             JSONArray jsonArray = jsonObject.getJSONArray(getString(R.string.notes_list));
 
-            if (jsonArray != null && jsonArray.length() > 0) {
+            if (jsonArray != null /*&& jsonArray.length() > 0*/) {
                 for (int i = 0; i < jsonArray.length(); i++) {
                     JSONObject noteJson = jsonArray.getJSONObject(i);
 
@@ -203,10 +194,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
             }
 
+            // Sorting notes on the note timestamp
             if (notes.size() > 0)
                 Collections.sort(notes);
 
-            // Update Notes Count
+            // Update Notes Count in App Title
             updateNotesCount();
         } catch (IOException | JSONException e) {
             Log.e(TAG, "loadNotes: Failed to load JSON file", e);
@@ -220,7 +212,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             setTitle(getString(R.string.app_name));
     }
 
-    private void addNoteActivity(int notePosition, boolean existingNote, Note note){
+    private void addNoteActivity(int notePosition, boolean existingNote, Note note) {
         int requestCode = NEW_NOTE;
         Intent intent = new Intent(this, AddNote.class);
         intent.putExtra(getString(R.string.existing_note), existingNote);
@@ -235,7 +227,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void saveNotes() {
-
         if (!notesUpdated || notes.size() <= 0)
             return;
 
@@ -270,7 +261,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             e.printStackTrace();
         } finally {
             try {
-                if (writer!=null) {
+                if (writer != null) {
                     writer.flush();
                     writer.close();
                 }
@@ -287,35 +278,49 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (requestCode == NEW_NOTE) {
             if (resultCode == RESULT_OK) {
                 Note note = (Note) data.getSerializableExtra(getString(R.string.new_note));
-                if (note != null) {
-                    notes.add(note);
-                    Log.d(TAG, "onActivityResult: new note added: " + note.toString());
-                    notesUpdated = true;
-                    Collections.sort(notes);
-                    updateNotesCount();
-                    notesAdapter.notifyDataSetChanged();
-                }
+                if (note == null)
+                    return;
+
+                notes.add(note);
+                notesUpdated = true;
+                Log.d(TAG, "onActivityResult: new note added: " + note.toString());
+
+                // Sorting notes
+                Collections.sort(notes);
+
+                // Update Notes Count in App Title
+                updateNotesCount();
+
+                // Notify the adapter about DataSet change
+                notesAdapter.notifyDataSetChanged();
             } else {
                 Log.d(TAG, "onActivityResult: result Code: " + resultCode);
             }
-
         } else if (requestCode == EXISTING_NOTE) {
             if (resultCode == RESULT_OK) {
                 boolean isNoteChanged = data.getBooleanExtra(getString(R.string.note_updated), false);
-                if (isNoteChanged) {
-                    Note existingNote = (Note) data.getSerializableExtra(getString(R.string.note));
-                    int notePosition = data.getIntExtra(getString(R.string.note_position), 0);
-                    if (existingNote != null) {
-                        notes.set(notePosition, existingNote);
-                        Log.d(TAG, "onActivityResult: existing note edited: " + existingNote.toString());
-                        notesUpdated = true;
-                        Collections.sort(notes);
-                        updateNotesCount();
-                        notesAdapter.notifyDataSetChanged();
-                    }
-                }
+                if (!isNoteChanged)
+                    return;
+
+                Note existingNote = (Note) data.getSerializableExtra(getString(R.string.note));
+                if (existingNote == null)
+                    return;
+
+                int notePosition = data.getIntExtra(getString(R.string.note_position), 0);
+                notes.set(notePosition, existingNote);
+                notesUpdated = true;
+                Log.d(TAG, "onActivityResult: existing note edited: " + existingNote.toString());
+
+                // Sorting notes
+                Collections.sort(notes);
+
+                // Update Notes Count in App Title
+                updateNotesCount();
+
+                // Notify the adapter about DataSet change
+                notesAdapter.notifyDataSetChanged();
             } else {
-                Log.d(TAG, "onActivityResult: Existing NoteEdited: " + resultCode);
+                Log.d(TAG, "onActivityResult: Existing Note Edited: " + resultCode);
             }
         }
     }

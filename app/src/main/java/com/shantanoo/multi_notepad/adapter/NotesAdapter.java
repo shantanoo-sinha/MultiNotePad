@@ -1,6 +1,5 @@
 package com.shantanoo.multi_notepad.adapter;
 
-import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,8 +14,6 @@ import com.shantanoo.multi_notepad.R;
 import com.shantanoo.multi_notepad.model.Note;
 import com.shantanoo.multi_notepad.util.Util;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -75,6 +72,7 @@ public class NotesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         }
 
         public void bind(Note note) {
+            Log.d(TAG, "bind: Binding note to the ViewHolder");
             String title = note.getTitle();
             if (title != null && title.length() > 80)
                 title = title.substring(0, 80) + mainActivity.getString(R.string.continued_string);

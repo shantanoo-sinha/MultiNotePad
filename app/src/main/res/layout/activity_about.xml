@@ -5,22 +5,23 @@
     android:id="@+id/clAbout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@mipmap/multi_notepad"
+    android:background="@drawable/about_background"
     tools:context=".activity.About">
 
     <TextView
         android:id="@+id/tvAppTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/multi_note_pad"
+        android:text="@string/app_name"
         android:textAlignment="center"
         android:textSize="24sp"
         android:textStyle="bold"
+        android:textColor="#272525"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.20" />
+        app:layout_constraintVertical_bias="0.28" />
 
     <TextView
         android:id="@+id/tvAppCopyright"
@@ -31,6 +32,7 @@
         android:textAlignment="center"
         android:textSize="18sp"
         android:textStyle="bold"
+        android:textColor="#272525"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvAppTitle" />
@@ -41,12 +43,13 @@
         android:layout_height="wrap_content"
         android:text="@string/version"
         android:textAlignment="center"
+        android:textColor="#272525"
         android:textSize="18sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvAppCopyright"
-        app:layout_constraintVertical_bias="0.85" />
+        app:layout_constraintVertical_bias="0.68" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
