@@ -62,6 +62,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         notes = new ArrayList<>();
 
         recyclerView = findViewById(R.id.rvNotes);
+        recyclerView.setHasFixedSize(true);
         notesAdapter = new NotesAdapter(notes, this);
         recyclerView.setAdapter(notesAdapter);
 
@@ -180,7 +181,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             JSONObject jsonObject = new JSONObject(builder.toString());
             JSONArray jsonArray = jsonObject.getJSONArray(getString(R.string.notes_list));
 
-            if (jsonArray != null /*&& jsonArray.length() > 0*/) {
+            if (jsonArray != null && jsonArray.length() > 0) {
                 for (int i = 0; i < jsonArray.length(); i++) {
                     JSONObject noteJson = jsonArray.getJSONObject(i);
 
@@ -227,7 +228,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void saveNotes() {
-        if (!notesUpdated || notes.size() <= 0)
+        if (!notesUpdated)
             return;
 
         Log.d(TAG, "saveNotes: Saving notes to JSON file");
@@ -258,7 +259,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             notesUpdated = false;
         } catch (IOException e) {
             Log.e(TAG, "saveNotes: Failed to save notes to Json file", e);
-            e.printStackTrace();
+            //e.printStackTrace();
         } finally {
             try {
                 if (writer != null) {
@@ -267,7 +268,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
             } catch (IOException e) {
                 Log.e(TAG, "saveNotes: Failed to close resources", e);
-                e.printStackTrace();
+                /*e.printStackTrace();*/
             }
         }
     }
